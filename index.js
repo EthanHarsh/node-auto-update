@@ -1,4 +1,4 @@
-const cp = require("child_process");
+const { exec } = require('child_process');
 
 runUpdate();
 
@@ -12,14 +12,18 @@ setInterval(() => {
 
 
 function runUpdate() {
-    cp.spawn('./script/update.sh', function(err, stdout, stderr) {
+    const ls = exec('bash script/update.sh', function (error, stdout, stderr) {
+    if (error) {
+        console.log(error.stack);
+        console.log('Error code: ' + error.code);
+        console.log('Signal received: ' + error.signal);
+    }
+    console.log('Child Process STDOUT: ' + stdout);
+    console.log('Child Process STDERR: ' + stderr);
+    });
 
-        stdout.on("data", data => {
-                console.log(data);
-        });
-        
-        stderr.on("data", data => {
-                console.log(data);
-        });
+    ls.on('exit', function (code) {
+    console.log('Child process exited with exit code ' + code);
     });
 }
+
